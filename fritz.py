@@ -24,15 +24,16 @@ def fritz_stats():
     import time
     import gc
 
-    i = 9
+    i = -1
     sid = ""
 
     while True:
         try:
-            i += 1
-            if i == 10:
+            if i < 0:
+                i = 10
                 sync_time(pwm)
-                i = 0
+
+            i -= 1
 
             time_start = time.time_ns()
             pwm.freq(5)
@@ -69,7 +70,11 @@ def fritz_stats():
                 time.sleep_ms(sleep_ms)
 
             print()
-        except OSError:
+        except KeyboardInterrupt:
+            print()
+            print('Keyboard interrupt deteced, stopping...')
+            break
+        except:
             print()
             print('Something went wrong, retrying...')
             print()
