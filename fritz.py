@@ -72,7 +72,7 @@ def fritz_stats():
             print()
         except KeyboardInterrupt:
             print()
-            print('Keyboard interrupt deteced, stopping...')
+            print('Keyboard interrupt detected, stopping...')
             break
         except:
             print()
