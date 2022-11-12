@@ -1,20 +1,21 @@
-fritz_cfg = """
-# structure of config file 'fritz_cfg.py'
-host = ''           # host name or ip address of FRITZ!Box, e.g. fritz.box or 192.168.178.1
-username = ''       # user name
-fritz_pw = ''       # password
-ain = ''            # Aktor Identifikationsnummer (AIN)", on your FRITZ!Box go to "Heimnetz > Smart Home" and edit your device to get the AIN
+powermeter_cfg = """
+# structure of config file 'powermeter_cfg.py'
+device = ''         # possible options: fritzbox, shelly
+host = ''           # host name or ip address of power meter, e.g. fritz.box or 192.168.178.1
+username = ''       # fritzbox only: user name
+fritz_pw = ''       # fritzbox only: password
+ain = ''            # fritzbox only: Aktor Identifikationsnummer (AIN), on your FRITZ!Box go to "Heimnetz > Smart Home" and edit your device to get the AIN
 host_external = ''  # external host for logging and display - must end with trailing slash (/)
 host_auth_key = ''  # auth key must match on external host
 """
 
 try:
-    from fritz_cfg import *
+    from powermeter_cfg import *
 except ImportError:
     print('Failed to load config file')
-    print(fritz_cfg)
+    print(powermeter_cfg)
 
-def fritz_stats():
+def powermeter_stats():
     import machine
     led = machine.Pin(2)
     pwm = machine.PWM(led)
@@ -42,21 +43,59 @@ def fritz_stats():
             gc.collect()
 
             print('Collecting stats: ', end = '')
-            stats = http_get_stats('http://'+host+'/webservices/homeautoswitch.lua?ain='+ain+'&switchcmd=getbasicdevicestats&sid='+sid)
-            if (stats == ""):
-                print('Failed')
-                sid = fritz_login()
-                print('Collecting stats: ', end = '')
+
+            if (device == "fritzbox"):
                 stats = http_get_stats('http://'+host+'/webservices/homeautoswitch.lua?ain='+ain+'&switchcmd=getbasicdevicestats&sid='+sid)
-            if (stats == ""):
-                print('Failed')
+                if (stats == ""):
+                    print('Failed')
+                    sid = fritz_login()
+                    print('Collecting stats: ', end = '')
+                    stats = http_get_stats('http://'+host+'/webservices/homeautoswitch.lua?ain='+ain+'&switchcmd=getbasicdevicestats&sid='+sid)
+                if (stats == ""):
+                    print('Failed')
+                    continue
+
+                t = cettime()
+                stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
+                stats_time = '{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
+                stats_power = '{:.2f}'.format(int(xml_get(stats, 'power')) / 100)
+                stats_temp = '{:.1f}'.format(int(xml_get(stats, 'temperature')) / 10)
+
+            elif (device == "shelly"):
+                """
+                $data = json_decode(file_get_contents('http://'.$host.'/status'), true);
+
+                if (!$data) {
+                    return (array('error', 'Unable to query Shelly device. Go to <a href="overview.php">stats history</a>.'));
+                }
+
+                $power = 0;
+                foreach ($data['meters'] as $meter) {
+                    if ($meter['is_valid']){
+                        $power += $meter['power'];
+                        $time = $meter['timestamp'];
+                    }
+                }
+
+                if (!isset($time)) {
+                    return (array('error', 'Unable to get stats. Please check host configuration and if the device is powered. Go to <a href="overview.php">stats history</a>.'));
+                }
+
+                if ($time < 500000000) {
+                    $time = time();
+                }
+
+                $stats_array['date'] = DateTime::createFromFormat('U', $time)->format("d.m.Y");
+                $stats_array['time'] = DateTime::createFromFormat('U', $time)->format("H:i:s");
+                $stats_array['power'] = pm_round($power, true, 2);
+                if (isset($data['temperature'])) {
+                    $stats_array['temp'] = pm_round($data['temperature'], true, 2);
+                }
+                """
+            else:
+                print('wrong device configured')
                 continue
 
-            t = cettime()
-            stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
-            stats_time = '{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
-            stats_power = '{:.2f}'.format(int(xml_get(stats, 'power')) / 100)
-            stats_temp = '{:.1f}'.format(int(xml_get(stats, 'temperature')) / 10)
             stats = stats_date + ',' + stats_time + ',' + stats_power + ',' + stats_temp
             print(stats)
 
