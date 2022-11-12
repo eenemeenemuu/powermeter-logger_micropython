@@ -73,28 +73,18 @@ def powermeter_stats():
 
                 stats = json.loads(stats[stats.find('{'):])
 
-                t = cettime()
+                t = int(stats['meters'][0]['timestamp'])
+                if (t < 500000000):
+                    t = cettime()
+                else:
+                    t = time.localtime(t)
+
                 stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
                 stats_time = '{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
                 stats_power = '{:.2f}'.format(float(stats['meters'][0]['power']))
                 stats = stats_date + ',' + stats_time + ',' + stats_power
 
                 """
-                foreach ($data['meters'] as $meter) {
-                    if ($meter['is_valid']){
-                        $power += $meter['power'];
-                        $time = $meter['timestamp'];
-                    }
-                }
-
-
-                if ($time < 500000000) {
-                    $time = time();
-                }
-
-                $stats_array['date'] = DateTime::createFromFormat('U', $time)->format("d.m.Y");
-                $stats_array['time'] = DateTime::createFromFormat('U', $time)->format("H:i:s");
-                $stats_array['power'] = pm_round($power, true, 2);
                 if (isset($data['temperature'])) {
                     $stats_array['temp'] = pm_round($data['temperature'], true, 2);
                 }
