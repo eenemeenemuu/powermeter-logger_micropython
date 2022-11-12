@@ -22,6 +22,8 @@ def powermeter_stats():
     pwm.duty(1020)
     pwm.freq(1)
 
+    if (device == "shelly"):
+        import json
     import time
     import gc
 
@@ -60,16 +62,24 @@ def powermeter_stats():
                 stats_time = '{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
                 stats_power = '{:.2f}'.format(int(xml_get(stats, 'power')) / 100)
                 stats_temp = '{:.1f}'.format(int(xml_get(stats, 'temperature')) / 10)
+                stats = stats_date + ',' + stats_time + ',' + stats_power + ',' + stats_temp
 
             elif (device == "shelly"):
+                stats = http_get('http://'+host+'/status')
+
+                if (stats == ""):
+                    print('Failed')
+                    continue
+
+                stats = json.loads(stats[stats.find('{'):])
+
+                t = cettime()
+                stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
+                stats_time = '{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
+                stats_power = '{:.2f}'.format(float(stats['meters'][0]['power']))
+                stats = stats_date + ',' + stats_time + ',' + stats_power
+
                 """
-                $data = json_decode(file_get_contents('http://'.$host.'/status'), true);
-
-                if (!$data) {
-                    return (array('error', 'Unable to query Shelly device. Go to <a href="overview.php">stats history</a>.'));
-                }
-
-                $power = 0;
                 foreach ($data['meters'] as $meter) {
                     if ($meter['is_valid']){
                         $power += $meter['power'];
@@ -77,9 +87,6 @@ def powermeter_stats():
                     }
                 }
 
-                if (!isset($time)) {
-                    return (array('error', 'Unable to get stats. Please check host configuration and if the device is powered. Go to <a href="overview.php">stats history</a>.'));
-                }
 
                 if ($time < 500000000) {
                     $time = time();
@@ -96,7 +103,6 @@ def powermeter_stats():
                 print('wrong device configured')
                 continue
 
-            stats = stats_date + ',' + stats_time + ',' + stats_power + ',' + stats_temp
             print(stats)
 
             print('Sending stats to external host: ', end = '')
