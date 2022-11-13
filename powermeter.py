@@ -61,8 +61,7 @@ def powermeter_stats():
                 stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
                 stats_time = '{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
                 stats_power = '{:.2f}'.format(int(xml_get(stats, 'power')) / 100)
-                stats_temp = '{:.1f}'.format(int(xml_get(stats, 'temperature')) / 10)
-                stats = stats_date + ',' + stats_time + ',' + stats_power + ',' + stats_temp
+                stats_temp = ',{:.1f}'.format(int(xml_get(stats, 'temperature')) / 10)
 
             elif (device == "shelly"):
                 stats = http_get('http://'+host+'/status')
@@ -82,17 +81,16 @@ def powermeter_stats():
                 stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
                 stats_time = '{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
                 stats_power = '{:.2f}'.format(float(stats['meters'][0]['power']))
-                stats = stats_date + ',' + stats_time + ',' + stats_power
+                if 'temperature' in stats:
+                    stats_temp = ',{:.2f}'.format(float(stats['temperature']))
+                else:
+                    stats_temp = ''
 
-                """
-                if (isset($data['temperature'])) {
-                    $stats_array['temp'] = pm_round($data['temperature'], true, 2);
-                }
-                """
             else:
                 print('wrong device configured')
                 continue
 
+            stats = stats_date + ',' + stats_time + ',' + stats_power + stats_temp
             print(stats)
 
             print('Sending stats to external host: ', end = '')
