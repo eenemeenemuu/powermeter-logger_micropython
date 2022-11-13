@@ -72,7 +72,7 @@ def powermeter_stats():
 
                 stats = json.loads(stats[stats.find('{'):])
 
-                t = int(stats['meters'][0]['timestamp'])
+                t = int(stats['meters'][0]['timestamp'] - 946684800)
                 if (t < 500000000):
                     t = cettime()
                 else:
