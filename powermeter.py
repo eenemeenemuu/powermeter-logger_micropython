@@ -184,7 +184,7 @@ def http_get_stats(url):
         data = s.recv(128)
         if data:
             str_return += str(data, 'utf8')
-            str_return = re.sub(',[0-9]+', ',', str_return)
+            str_return = re.sub(',[-0-9]+', ',', str_return)
             str_return = re.sub(',+', ',', str_return)
         else:
             break
