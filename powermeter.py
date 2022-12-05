@@ -28,6 +28,7 @@ def powermeter_stats():
     import time
     import gc
 
+    error_counter = 0
     i = -1
     sid = ""
 
@@ -94,7 +95,8 @@ def powermeter_stats():
             stats = stats_date + stats_time + stats_power + stats_temp
             print(stats)
 
-            print('Sending stats to external host: ', end = '')
+            time.sleep_ms(500)
+            print('Sending stats to '+host_external+': ', end = '')
             print(https_put(host_external+'log.php?key='+host_auth_key+'&stats='+stats))
 
             sleep_ms = (10 * 1000) - round(((time.time_ns() - time_start) / 1000 / 1000))
@@ -103,6 +105,7 @@ def powermeter_stats():
                 print('Sleep '+str(sleep_ms)+' ms')
                 time.sleep_ms(sleep_ms)
 
+            error_counter = 0
             print()
         except KeyboardInterrupt:
             print()
@@ -110,9 +113,15 @@ def powermeter_stats():
             break
         except:
             print()
-            print('Something went wrong, retrying...')
-            print()
-            continue
+            error_counter += 1
+            if error_counter > 3:
+                print('Something went wrong too often, rebooting...')
+                import machine
+                machine.reset()
+            else:
+                print('Something went wrong, retrying... ['+str(error_counter)+']')
+                print()
+                continue
 
 def fritz_login():
     print('Check for valid session ID')
