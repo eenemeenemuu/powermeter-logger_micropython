@@ -12,6 +12,7 @@ power_threshold = 0     # optional: minimum required power to log power value (m
 
 try:
     from powermeter_cfg import *
+    del powermeter_cfg
 except ImportError:
     print('Failed to load config file')
     print(powermeter_cfg)
@@ -27,6 +28,10 @@ def powermeter_stats():
         import json
     import time
     import gc
+
+    for wait in range(3, 0, -1):
+        print(wait)
+        time.sleep(1)
 
     error_counter = 0
     i = -1
