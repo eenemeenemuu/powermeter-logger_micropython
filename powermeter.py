@@ -10,18 +10,20 @@ host_auth_key = ''      # auth key must match on external host
 power_threshold = 0     # optional: minimum required power to log power value (may be required if micro inverter has measurable consumption at night); can be float value like 0.25
 """
 
+import machine
+pwm = machine.PWM(machine.Pin(2))
+pwm.duty(1020)
+
 try:
     from powermeter_cfg import *
     del powermeter_cfg
 except ImportError:
+    pwm.freq(2)
     print('Failed to load config file')
     print(powermeter_cfg)
+    raise SystemExit(0)
 
 def powermeter_stats():
-    import machine
-    led = machine.Pin(2)
-    pwm = machine.PWM(led)
-    pwm.duty(1020)
     pwm.freq(1)
 
     if (device == "shelly"):
