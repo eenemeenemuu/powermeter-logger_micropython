@@ -1,5 +1,5 @@
 # Powermeter logger (Micropython)
-Software um die aktuellen Messwerte verschiedener Energiemessdosen (aller 10 Sekunden) auszulesen und an einen externen Webserver weiterzuleiten. Dort können sie zur weiteren Verarbeitung geloggt werden.
+Software um die aktuellen Messwerte verschiedener Energiemessdosen auszulesen und an einen externen Webserver weiterzuleiten. Dort können sie zur weiteren Verarbeitung geloggt werden.
 
 ## Unterstützte Hardware
 * Wemos D1 Mini (ESP8266)
@@ -28,3 +28,13 @@ Software um die aktuellen Messwerte verschiedener Energiemessdosen (aller 10 Sek
 1. Während die Daten aus der Energiemessdose ausgelesen und an den Server übermittelt werden blinkt die LED 5x pro Sekunde
 1. Alle 10 Durchläufe wird die Uhrzeit synchronisiert, dabei blinkt die LED 10x pro Sekunde
 1. Nach (maximal) 10 Sekunden Wartezeit beginnt die Routine wieder bei Punkt 4
+
+## Datenübermittlung an externen Webserver
+* Übermittlung per HTTPS an log.php
+* Übermittelte Parameter:
+1. 'key' (der übermittelte Schlüssel muss auf Server und Client übereinstimmen, damit nicht jeder "einfach so" Daten übermitteln kann)
+1. 'stats' (kommaseparierter String im Format <Datum>,<Uhrzeit>,<Leistung>[,<Temperatur>]
+
+## Credits / verwendete Bibliotheken
+* WiFi Manager von https://github.com/ferreira-igor/micropython-wifi_manager
+* MD5-Bibliothek von https://github.com/lemariva/ESP32MicroPython
