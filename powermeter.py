@@ -31,10 +31,6 @@ def powermeter_stats():
     import time
     import gc
 
-    for wait in range(3, 0, -1):
-        print(wait)
-        time.sleep(1)
-
     error_counter = 0
     i = -1
     sid = ""
@@ -43,7 +39,7 @@ def powermeter_stats():
         try:
             if i < 0:
                 i = 10
-                sync_time(pwm)
+                sync_time()
 
             i -= 1
 
@@ -167,7 +163,7 @@ def power_threshold_get(power):
     else:
         return power
 
-def sync_time(pwm):
+def sync_time():
     pwm.freq(10)
     from ntptime import settime
     print('Syncing time')
