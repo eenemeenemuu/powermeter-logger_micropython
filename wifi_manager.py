@@ -211,8 +211,8 @@ class WifiManager:
     def __HandleConfigure(self):
         match = ure.search('ssid=([^&]*)&password=(.*)', self.request)
         if match:
-            ssid = match.group(1).decode('utf-8').replace('%3F', '?').replace('%21', '!').replace('%23', '#')
-            password = match.group(2).decode('utf-8').replace('%3F', '?').replace('%21', '!')
+            ssid = match.group(1).decode('utf-8').replace('%3F', '?').replace('%21', '!').replace('%23', '#').replace('%40', '@')
+            password = match.group(2).decode('utf-8').replace('%3F', '?').replace('%21', '!').replace('%23', '#').replace('%40', '@')
             if len(ssid) == 0:
                 self.__SendResponse("""<p>SSID must be providaded!</p><p>Go back and try again!</p>""", 400)
             elif self.__WifiConnect(ssid, password):
