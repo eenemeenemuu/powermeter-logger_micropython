@@ -10,16 +10,16 @@ Software um die aktuellen Messwerte verschiedener Energiemessdosen auszulesen un
 * Shelly-Geräte (getestet: Shelly Plug S, Shelly 1 PM)
 
 ## Installation / Konfiguration
-1. Micropython flashen: https://docs.micropython.org/en/latest/esp8266/tutorial/intro.html
-1. Mit der REPL verbinden und WebREPL aktivieren https://docs.micropython.org/en/latest/esp8266/tutorial/repl.html
-1. WebREPL herunterladen: https://github.com/micropython/webrepl
+1. Micropython flashen, siehe: https://docs.micropython.org/en/latest/esp8266/tutorial/intro.html
+1. Mit REPL verbinden und WebREPL aktivieren, siehe: https://docs.micropython.org/en/latest/esp8266/tutorial/repl.html
+1. WebREPL von hier herunterladen: https://github.com/micropython/webrepl
 1. Mit dem WLAN-AP verbinden (MicroPython-xxxxxx / micropythoN)
 1. WebREPL starten und mit folgenden Daten verbinden: ws://192.168.4.1:8266
 1. Mit zuvor gewähltem Passwort einloggen und alle Dateien aus diesem Repository auf das Gerät hochladen (idealerweise Konfiguration in der Datei "powermeter_cfg.py" vorher anpassen)
 1. Gerät neu starten
 1. Mit dem WLAN-AP verbinden (WiFiManager / wifimanager), siehe auch: https://github.com/ferreira-igor/micropython-wifi_manager
-1. Im Browser http://192.168.4.1 öffnen und Gerät mit eigenem WLAN verbinden
-1. ggf. WebREPL mit neuer IP und Port 8266 verbinden um Dateien anzupassen
+1. Im Browser http://192.168.4.1 aufrufen und Gerät mit dem eigenem WLAN verbinden
+1. ggf. WebREPL mit neuer IP und Port 8266 verbinden um neue/geänderte Dateien hochzuladen
 
 ## Dokumentation Boot bzw. LED-Anzeige
 1. Direkt nach dem Booten blinkt die LED 20x pro Sekunde und der WiFi-Manager wird ausgeführt
