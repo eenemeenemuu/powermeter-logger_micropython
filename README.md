@@ -33,7 +33,7 @@ Software um die aktuellen Messwerte verschiedener Energiemessdosen auszulesen un
 * Übermittlung per HTTPS an log.php
 * Übermittelte Parameter:
 1. 'key' (der übermittelte Schlüssel muss auf Server und Client übereinstimmen, damit nicht jeder "einfach so" Daten übermitteln kann)
-1. 'stats' (kommaseparierter String im Format Datum,Uhrzeit,Leistung[,Temperatur] - jeweils ohne Einheit)
+1. 'stats' (kommaseparierter String im Format "Datum,Uhrzeit,Leistung[,Temperatur]" - jeweils ohne Einheit)
 
 ## Credits / verwendete Bibliotheken
 * WiFi Manager von https://github.com/ferreira-igor/micropython-wifi_manager
