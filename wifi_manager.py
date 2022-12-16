@@ -78,6 +78,10 @@ class WifiManager:
 
 
     def __ReadProfiles(self):
+        from machine import Pin
+        if not Pin(4, Pin.IN, Pin.PULL_UP).value():
+            return {}
+
         try:
             with open(self.sta_profiles) as myfile:
                 lines = myfile.readlines()
@@ -94,17 +98,11 @@ class WifiManager:
     def __WifiConnect(self, ssid, password):
         print('Trying to connect to:', ssid)
         self.wlan_sta.connect(ssid, password)
-        for _ in range(100):
-            if self.wlan_sta.isconnected():
-                print('\nConnected! Network information:', self.wlan_sta.ifconfig())
-                return True
-            else:
-                print('.', end='')
-                utime.sleep_ms(100)
-        print('\nConnection failed!')
-        self.wlan_sta.disconnect()
-        return False
-
+        while not self.wlan_sta.isconnected():
+            print('.', end='')
+            utime.sleep(1)
+        print('\nConnected! Network information:', self.wlan_sta.ifconfig())
+        return True
     
     def __WebServer(self):
         self.wlan_ap.active(True)

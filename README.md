@@ -21,6 +21,12 @@ Software um die aktuellen Messwerte verschiedener Energiemessdosen auszulesen un
 1. Im Browser http://192.168.4.1 aufrufen und Gerät mit dem eigenem WLAN verbinden
 1. ggf. WebREPL mit neuer IP und Port 8266 verbinden um neue/geänderte Dateien hochzuladen
 
+## WLAN-Einstellungen ändern
+1. GPIO4 und Ground verbinden ("D2" und "G" beim Wemos D1 mini) und Gerät (neu) starten
+1. Mit dem WLAN-AP verbinden (WiFiManager / wifimanager), siehe auch: https://github.com/ferreira-igor/micropython-wifi_manager
+1. Im Browser http://192.168.4.1 aufrufen und Gerät mit dem eigenem WLAN verbinden
+1. GPIO4 und Ground wieder trennen und Gerät neu starten
+
 ## Dokumentation Boot bzw. LED-Anzeige
 1. Direkt nach dem Booten blinkt die LED 20x pro Sekunde und der WiFi-Manager wird ausgeführt
 1. Sobald das Gerät sich erfolgreich mit einem WLAN verbunden hat blinkt es 1x pro Sekunde
