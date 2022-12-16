@@ -46,7 +46,6 @@ def powermeter_stats():
             time_start = time.time_ns()
             pwm.freq(5)
 
-            #free some memory
             gc.collect()
 
             print('Collecting stats: ', end = '')
@@ -97,6 +96,8 @@ def powermeter_stats():
 
             stats = stats_date + stats_time + stats_power + stats_temp
             print(stats)
+
+            gc.collect()
 
             print('Sending stats to '+host_external+': ', end = '')
             print(https_put(host_external+'log.php?key='+host_auth_key+'&stats='+stats))
