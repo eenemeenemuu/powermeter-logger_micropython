@@ -2,7 +2,7 @@ def r():
     import machine
     machine.reset()
 
-import machine
+from machine import Pin
 pwm = machine.PWM(machine.Pin(2))
 pwm.duty(1020)
 pwm.freq(20)
