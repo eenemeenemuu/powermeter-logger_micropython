@@ -15,7 +15,7 @@ Software um die aktuellen Messwerte verschiedener Energiemessdosen auszulesen un
 1. Datei "powermeter_cfg.py" mit Texteditor öffnen und Daten eingeben
 1. Micropython flashen, siehe: https://docs.micropython.org/en/latest/esp8266/tutorial/intro.html
 1. Mit REPL verbinden und WebREPL aktivieren, siehe: https://docs.micropython.org/en/latest/esp8266/tutorial/repl.html
-1. WebREPL von hier herunterladen: https://github.com/micropython/webrepl
+1. WebREPL von hier herunterladen: https://github.com/micropython/webrepl - oder direkt hier öffnen: http://micropython.org/webrepl/
 1. Mit dem WLAN-AP verbinden (MicroPython-xxxxxx / micropythoN)
 1. WebREPL starten und mit folgenden Daten verbinden: ws://192.168.4.1:8266
 1. Mit zuvor gewähltem Passwort einloggen und alle Dateien hochladen
