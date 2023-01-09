@@ -3,7 +3,7 @@ Software um die aktuellen Messwerte verschiedener Energiemessdosen auszulesen un
 
 ## Unterstützte Hardware
 * Wemos D1 Mini (ESP8266)
-* Theoretisch alle weiteren Geräte auf denen Micropython läuft
+* Theoretisch alle weiteren Geräte auf denen Micropython läuft (nicht getestet)
 
 ## Unterstützte Energiemessdosen
 * Fritz!DECT 200/210
@@ -15,14 +15,24 @@ Software um die aktuellen Messwerte verschiedener Energiemessdosen auszulesen un
 1. Datei "powermeter_cfg.py" mit Texteditor öffnen und Daten eingeben
 1. Micropython flashen, siehe: https://docs.micropython.org/en/latest/esp8266/tutorial/intro.html
 1. Mit REPL verbinden und WebREPL aktivieren, siehe: https://docs.micropython.org/en/latest/esp8266/tutorial/repl.html
-1. WebREPL von hier herunterladen: https://github.com/micropython/webrepl - oder direkt hier öffnen: http://micropython.org/webrepl/
+1. WebREPL von hier herunterladen und im Browser öffnen: https://github.com/micropython/webrepl - oder direkt hier öffnen: http://webrepl.1aco.de
 1. Mit dem WLAN-AP verbinden (MicroPython-xxxxxx / micropythoN)
-1. WebREPL starten und mit folgenden Daten verbinden: ws://192.168.4.1:8266
-1. Mit zuvor gewähltem Passwort einloggen und alle Dateien hochladen
+1. WebREPL mit folgenden Daten verbinden: ws://192.168.4.1:8266
+1. Mit zuvor gewähltem Passwort an WebREPL anmelden 
+2. Alle \*.py-Dateien aus dem Repository hochladen
+3. Gerät neu starten
+4. Mit dem WLAN-AP verbinden (WiFiManager / wifimanager), siehe auch: https://github.com/ferreira-igor/micropython-wifi_manager
+5. Im Browser http://192.168.4.1 aufrufen und Gerät mit dem eigenem WLAN verbinden
+6. ggf. WebREPL mit neuer IP und Port 8266 verbinden um neue/geänderte Dateien hochzuladen
+
+## Software / Konfiguration aktualisieren
+1. WebREPL von hier herunterladen und im Browser öffnen: https://github.com/micropython/webrepl - oder direkt hier öffnen: http://webrepl.1aco.de
+1. IP-Adresse des Mikrocontrollers (oder entsprechendem Gerät) herausfinden, z.B. im Router
+1. WebREPL mit folgenden Daten verbinden: ws://<IP-Adresse>:8266
+1. Mit zuvor gewähltem Passwort an WebREPL anmelden
+1. Alle (aktualisierten) Dateien aus dem Repository hochladen - in der Regel reicht es die Datei "powermeter.py" zu aktualisieren
+1. Wenn die Konfiguration angepasst werden muss, Datei "powermeter_cfg.py" herunterladen, aktualisieren und wieder hochladen
 1. Gerät neu starten
-1. Mit dem WLAN-AP verbinden (WiFiManager / wifimanager), siehe auch: https://github.com/ferreira-igor/micropython-wifi_manager
-1. Im Browser http://192.168.4.1 aufrufen und Gerät mit dem eigenem WLAN verbinden
-1. ggf. WebREPL mit neuer IP und Port 8266 verbinden um neue/geänderte Dateien hochzuladen
 
 ## WLAN-Einstellungen ändern
 1. GPIO4 und Ground verbinden ("D2" und "G" beim Wemos D1 mini) und Gerät (neu) starten
