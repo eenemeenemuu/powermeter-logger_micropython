@@ -10,7 +10,7 @@ Software um die aktuellen Messwerte verschiedener Energiemessdosen auszulesen un
 * Shelly-Geräte (getestet: Shelly Plug S, Shelly 1 PM)
 
 ## Installation / Konfiguration
-1. Dieses Repository herunterladen<
+1. Dieses Repository herunterladen
 1. Datei "powermeter_cfg.py.sample" in "powermeter_cfg.py" umbenennen
 1. Datei "powermeter_cfg.py" mit Texteditor öffnen und Daten eingeben
 1. Micropython flashen, siehe: https://docs.micropython.org/en/latest/esp8266/tutorial/intro.html
