@@ -228,7 +228,7 @@ def http_get_stats(url):
             break
     s.close()
     str_return = str_return[str_return.find('<devicestats'):len(str_return)].strip()
-    str_return = re.sub('<stats count="[0-9]+" grid="[0-9]+">', '', str_return)
+    str_return = re.sub('<stats count="[0-9]+" grid="[0-9]+"( datatime="[0-9]+")?>', '', str_return)
     str_return = str_return.replace('</stats>', '')
     str_return = str_return.replace(',<', '<')
     return str_return
