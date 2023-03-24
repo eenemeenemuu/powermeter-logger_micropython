@@ -115,10 +115,7 @@ def powermeter_stats():
             gc.collect()
 
             print('Sending stats to '+host_external+': ', end = '')
-            if (host_external[0:5] == "https"):
-                print(https_put(host_external+'log.php?key='+host_auth_key+'&stats='+stats))
-            else:
-                print(http_get(host_external+'log.php?key='+host_auth_key+'&stats='+stats))
+            print(http_s_send_stats(host_external+'log.php?key='+host_auth_key+'&stats='+stats))
 
             sleep_ms = (10 * 1000) - round(((time.time_ns() - time_start) / 1000 / 1000))
             if (sleep_ms > 0):
@@ -236,18 +233,23 @@ def http_get_stats(url):
     str_return = str_return.replace(',<', '<')
     return str_return
 
-def https_put(url):
+def http_s_send_stats(url):
     import socket
-    try:
-        import ussl as ssl
-    except:
-        import ssl
+    if (host_external[0:5] == "https"):
+        port = 443
+        try:
+            import ussl as ssl
+        except:
+            import ssl
+    else:
+        port = 80
     _, _, host, path = url.split('/', 3)
-    addr = socket.getaddrinfo(host, 443)[0][-1]
+    addr = socket.getaddrinfo(host, port)[0][-1]
     s = socket.socket()
     s.connect(addr)
     s.settimeout(5)
-    s = ssl.wrap_socket(s)
+    if (host_external[0:5] == "https"):
+        s = ssl.wrap_socket(s)
     s.write(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
     str_return = ''
     end = 0
