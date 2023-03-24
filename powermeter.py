@@ -100,7 +100,10 @@ def powermeter_stats():
             gc.collect()
 
             print('Sending stats to '+host_external+': ', end = '')
-            print(https_put(host_external+'log.php?key='+host_auth_key+'&stats='+stats))
+            if (host_external[0:5] == "https"):
+                print(https_put(host_external+'log.php?key='+host_auth_key+'&stats='+stats))
+            else:
+                print(http_get(host_external+'log.php?key='+host_auth_key+'&stats='+stats))
 
             sleep_ms = (10 * 1000) - round(((time.time_ns() - time_start) / 1000 / 1000))
             if (sleep_ms > 0):
