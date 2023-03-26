@@ -68,6 +68,26 @@ def powermeter_stats():
                 stats_power = ',{:.2f}'.format(power_threshold_get(int(xml_get(stats, 'power')) / 100))
                 stats_temp = ',{:.1f}'.format(int(xml_get(stats, 'temperature')) / 10)
 
+            elif (device == "shelly3em"):
+                stats = http_get('http://'+host+'/status')
+
+                if (stats == ""):
+                    print('Failed')
+                    continue
+
+                stats = json.loads(stats[stats.find('{'):])
+
+                t = int(stats['unixtime'] - 946684800)
+                if (t < 500000000):
+                    t = cettime()
+                else:
+                    t = time.localtime(t)
+
+                stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
+                stats_time = ',{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
+                stats_power = ',{:.2f}'.format(power_threshold_get(float(stats['total_power'])))
+                stats_temp = ''
+
             elif (device == "shelly"):
                 stats = http_get('http://'+host+'/status')
 

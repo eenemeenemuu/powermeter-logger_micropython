@@ -1,4 +1,4 @@
-device = ''             # possible options: fritzbox, shelly, tasmota, ahoydtu
+device = ''             # possible options: fritzbox, shelly3em, shelly, tasmota, ahoydtu
 host = ''               # host name or ip address of power meter, e.g. fritz.box or 192.168.178.1
 username = ''           # fritzbox only: user name
 fritz_pw = ''           # fritzbox only: password
