@@ -26,7 +26,7 @@ except ImportError:
 def powermeter_stats():
     pwm.freq(1)
 
-    if (device == "shelly" or device == "tasmota"):
+    if (device != "fritzbox"):
         import json
     import time
     import gc
@@ -62,6 +62,7 @@ def powermeter_stats():
                     continue
 
                 t = cettime()
+
                 stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
                 stats_time = ',{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
                 stats_power = ',{:.2f}'.format(power_threshold_get(int(xml_get(stats, 'power')) / 100))
@@ -98,12 +99,33 @@ def powermeter_stats():
                     continue
 
                 stats = json.loads(stats[stats.find('{'):])
+
                 t = stats['StatusSNS']['Time']
 
                 stats_date = '{:02d}.{:02d}.{:04d}'.format(int(t[8:10]), int(t[5:7]), int(t[0:4]))
                 stats_time = ',{:02d}:{:02d}:{:02d}'.format(int(t[11:13]), int(t[14:16]), int(t[17:19]))
                 stats_power = ',{:.2f}'.format(power_threshold_get(float(stats['StatusSNS']['ENERGY']['Power'])))
                 stats_temp = ''
+
+            elif (device == "ahoydtu"):
+                stats = http_get('http://'+host+'/api/live')
+
+                if (stats == ""):
+                    print('Failed')
+                    continue
+
+                stats = json.loads(stats[stats.find('{'):])
+
+                t = int(stats['inverter'][0]['ts_last_success'] - 946684800)
+                if (t < 500000000):
+                    t = cettime()
+                else:
+                    t = time.localtime(t)
+
+                stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
+                stats_time = ',{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
+                stats_power = ',{:.2f}'.format(power_threshold_get(float(stats['inverter'][0]['ch'][0][2])))
+                stats_temp = ',{:.2f}'.format(float(stats['inverter'][0]['ch'][0][5]))
 
             else:
                 print('wrong device configured')
