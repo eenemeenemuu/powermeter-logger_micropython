@@ -26,14 +26,28 @@ except ImportError:
 def powermeter_stats():
     pwm.freq(1)
 
-    if (device != "fritzbox"):
-        import json
     import time
     import gc
 
+    if (device == "fritzbox"):
+        from fritzbox import get_stats
+    elif (device == "shelly3em"):
+        from shelly3em import get_stats
+    elif (device == "shelly"):
+        from shelly import get_stats
+    elif (device == "tasmota"):
+        from tasmota import get_stats
+    elif (device == "ahoydtu"):
+        from ahoydtu import get_stats
+    else:
+        def get_stats(host):
+            print('wrong device configured (' + device + ')')
+            time.sleep(10)
+            print()
+            return False
+
     error_counter = 0
     i = -1
-    sid = ""
 
     while True:
         try:
@@ -49,110 +63,9 @@ def powermeter_stats():
             gc.collect()
 
             print('Collecting stats: ', end = '')
-
-            if (device == "fritzbox"):
-                stats = http_get_stats('http://'+host+'/webservices/homeautoswitch.lua?ain='+ain+'&switchcmd=getbasicdevicestats&sid='+sid)
-                if (stats == ""):
-                    print('Failed')
-                    sid = fritz_login()
-                    print('Collecting stats: ', end = '')
-                    stats = http_get_stats('http://'+host+'/webservices/homeautoswitch.lua?ain='+ain+'&switchcmd=getbasicdevicestats&sid='+sid)
-                if (stats == ""):
-                    print('Failed')
-                    continue
-
-                t = cettime()
-
-                stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
-                stats_time = ',{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
-                stats_power = ',{:.2f}'.format(power_threshold_get(int(xml_get(stats, 'power')) / 100))
-                stats_temp = ',{:.1f}'.format(int(xml_get(stats, 'temperature')) / 10)
-
-            elif (device == "shelly3em"):
-                stats = http_get('http://'+host+'/status')
-
-                if (stats == ""):
-                    print('Failed')
-                    continue
-
-                stats = json.loads(stats[stats.find('{'):])
-
-                t = convert_unix_timestamp(stats['unixtime'])
-                if (t < 500000000):
-                    t = cettime()
-                else:
-                    t = time.localtime(t)
-
-                stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
-                stats_time = ',{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
-                stats_power = ',{:.2f}'.format(power_threshold_get(float(stats['total_power'])))
-                stats_temp = ''
-
-            elif (device == "shelly"):
-                stats = http_get('http://'+host+'/status')
-
-                if (stats == ""):
-                    print('Failed')
-                    continue
-
-                stats = json.loads(stats[stats.find('{'):])
-
-                t = convert_unix_timestamp(stats['meters'][0]['timestamp'])
-                if (t < 500000000):
-                    t = cettime()
-                else:
-                    t = time.localtime(t)
-
-                stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
-                stats_time = ',{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
-                stats_power = ',{:.2f}'.format(power_threshold_get(float(stats['meters'][0]['power'])))
-                if 'temperature' in stats:
-                    stats_temp = ',{:.2f}'.format(float(stats['temperature']))
-                else:
-                    stats_temp = ''
-
-            elif (device == "tasmota"):
-                stats = http_get('http://'+host+'/cm?cmnd=Status%208')
-
-                if (stats == ""):
-                    print('Failed')
-                    continue
-
-                stats = json.loads(stats[stats.find('{'):])
-
-                t = stats['StatusSNS']['Time']
-
-                stats_date = '{:02d}.{:02d}.{:04d}'.format(int(t[8:10]), int(t[5:7]), int(t[0:4]))
-                stats_time = ',{:02d}:{:02d}:{:02d}'.format(int(t[11:13]), int(t[14:16]), int(t[17:19]))
-                stats_power = ',{:.2f}'.format(power_threshold_get(float(stats['StatusSNS']['ENERGY']['Power'])))
-                stats_temp = ''
-
-            elif (device == "ahoydtu"):
-                stats = http_get('http://'+host+'/api/live')
-
-                if (stats == ""):
-                    print('Failed')
-                    continue
-
-                stats = json.loads(stats[stats.find('{'):])
-
-                t = convert_unix_timestamp(stats['inverter'][0]['ts_last_success'])
-
-                if (t < 500000000):
-                    t = cettime()
-                else:
-                    t = time.localtime(t)
-
-                stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
-                stats_time = ',{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
-                stats_power = ',{:.2f}'.format(power_threshold_get(float(stats['inverter'][0]['ch'][0][2])))
-                stats_temp = ',{:.2f}'.format(float(stats['inverter'][0]['ch'][0][5]))
-
-            else:
-                print('wrong device configured')
+            stats = get_stats()
+            if (stats == False):
                 continue
-
-            stats = stats_date + stats_time + stats_power + stats_temp
             print(stats)
 
             gc.collect()
@@ -178,52 +91,17 @@ def powermeter_stats():
             if error_counter > 3:
                 print('Something went wrong too often, rebooting...')
                 import machine
+                time.sleep(1)
                 machine.reset()
             else:
                 print('Something went wrong, retrying... ['+str(error_counter)+']')
+                time.sleep(1)
                 print()
                 continue
 
-def fritz_login():
-    print('Check for valid session ID')
-    text = http_get('http://'+host+'/login_sid.lua')
-    sid = xml_get(text, 'SID')
-
-    if (sid == "0000000000000000"):
-        print('No valid session ID found, login to Fritzbox')
-        import md5
-        challenge = xml_get(text, 'Challenge')
-        text = http_get('http://'+host+'/login_sid.lua?username='+username+'&response='+challenge+'-'+md5.digest(utf8_to_utf16(challenge+'-'+fritz_pw)))
-        sid = xml_get(text, 'SID')
-
-    print('Session ID: '+sid)
-    print()
-
-    return sid
-
-def xml_get(text, xml_tag):
-    start = text.find('<' + xml_tag + '>') + len(xml_tag) + 2
-    end = text.find('</' + xml_tag + '>')
-    return text[start:end]
-
-def utf8_to_utf16(text):
-    text_utf16 = ''
-    for x in text:
-        text_utf16 += x + '\x00'
-    return text_utf16
-
-def power_threshold_get(power):
-    try:
-        power_threshold
-    except:
-        return power
-    if (power < power_threshold):
-        return 0
-    else:
-        return power
-
 def sync_time():
     pwm.freq(10)
+    from powermeter_functions import cettime
     from ntptime import settime
     print('Syncing time')
     t = cettime()
@@ -232,49 +110,6 @@ def sync_time():
     t = cettime()
     print('New time: {:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5]))
     print()
-
-def http_get(url):
-    import socket
-    _, _, host, path = url.split('/', 3)
-    addr = socket.getaddrinfo(host, 80)[0][-1]
-    s = socket.socket()
-    s.connect(addr)
-    s.settimeout(5)
-    s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
-    str_return = ''
-    while True:
-        data = s.recv(128)
-        if data:
-            str_return += str(data, 'utf8')
-        else:
-            break
-    s.close()
-    return str_return
-
-def http_get_stats(url):
-    import socket
-    import re
-    _, _, host, path = url.split('/', 3)
-    addr = socket.getaddrinfo(host, 80)[0][-1]
-    s = socket.socket()
-    s.connect(addr)
-    s.settimeout(5)
-    s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
-    str_return = ''
-    while True:
-        data = s.recv(128)
-        if data:
-            str_return += str(data, 'utf8')
-            str_return = re.sub(',[-0-9]+', ',', str_return)
-            str_return = re.sub(',+', ',', str_return)
-        else:
-            break
-    s.close()
-    str_return = str_return[str_return.find('<devicestats'):len(str_return)].strip()
-    str_return = re.sub('<stats count="[0-9]+" grid="[0-9]+"( datatime="[0-9]+")?>', '', str_return)
-    str_return = str_return.replace('</stats>', '')
-    str_return = str_return.replace(',<', '<')
-    return str_return
 
 def http_s_send_stats(url):
     import socket
@@ -307,32 +142,3 @@ def http_s_send_stats(url):
             break
     s.close()
     return str_return[0:end]
-
-def cettime():
-    #Source: https://forum.micropython.org/viewtopic.php?f=2&t=4034
-    import time
-    year = time.localtime()[0]       #get current year
-    HHMarch   = time.mktime((year,3 ,(31-(int(5*year/4+4))%7),1,0,0,0,0,0)) #Time of March change to CEST
-    HHOctober = time.mktime((year,10,(31-(int(5*year/4+1))%7),1,0,0,0,0,0)) #Time of October change to CET
-    now=time.time()
-    if now < HHMarch :               # we are before last sunday of march
-        cet=time.localtime(now+3600) # CET:  UTC+1H
-    elif now < HHOctober :           # we are before last sunday of october
-        cet=time.localtime(now+7200) # CEST: UTC+2H
-    else:                            # we are after last sunday of october
-        cet=time.localtime(now+3600) # CET:  UTC+1H
-    return(cet)
-
-def convert_unix_timestamp(t):
-    import time
-    year = time.localtime()[0]       #get current year
-    HHMarch   = time.mktime((year,3 ,(31-(int(5*year/4+4))%7),1,0,0,0,0,0)) #Time of March change to CEST
-    HHOctober = time.mktime((year,10,(31-(int(5*year/4+1))%7),1,0,0,0,0,0)) #Time of October change to CET
-    now=time.time()
-    if now < HHMarch :               # we are before last sunday of march
-        t = t - 946684800            # CET:  UTC+1H
-    elif now < HHOctober :           # we are before last sunday of october
-        t = t - 946684800 + 7200     # CEST: UTC+2H
-    else:                            # we are after last sunday of october
-        t = t - 946684800            # CET:  UTC+1H
-    return(t)
