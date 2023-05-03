@@ -18,7 +18,7 @@ def http_get(url):
 
 def power_threshold_get(power):
     try:
-        power_threshold
+        from powermeter_cfg import power_threshold
     except:
         return power
     if (power < power_threshold):
