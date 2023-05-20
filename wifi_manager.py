@@ -16,6 +16,7 @@ class WifiManager:
         self.wlan_sta = network.WLAN(network.STA_IF)
         self.wlan_sta.active(True)
         self.wlan_ap = network.WLAN(network.AP_IF)
+        self.wlan_ap.active(False)
         
         # Avoids simple mistakes with wifi ssid and password lengths, but doesn't check for forbidden or unsupported characters.
         if len(ssid) > 32:
@@ -45,12 +46,11 @@ class WifiManager:
     def connect(self):
         if self.wlan_sta.isconnected():
             return
-        profiles = self.__ReadProfiles()
-        for ssid, *_ in self.wlan_sta.scan():
-            ssid = ssid.decode("utf-8")
-            if ssid in profiles:
-                password = profiles[ssid]
-                if self.__WifiConnect(ssid, password):
+        from machine import Pin
+        if Pin(4, Pin.IN, Pin.PULL_UP).value():
+            profiles = self.__ReadProfiles()
+            if 'ssid' in profiles:
+                if self.__WifiConnect(profiles['ssid'], profiles['password']):
                     return
         print('Could not connect to any WiFi network. Starting the configuration portal...')
         self.__WebServer()
@@ -78,10 +78,6 @@ class WifiManager:
 
 
     def __ReadProfiles(self):
-        from machine import Pin
-        if not Pin(4, Pin.IN, Pin.PULL_UP).value():
-            return {}
-
         try:
             with open(self.sta_profiles) as myfile:
                 lines = myfile.readlines()
@@ -91,7 +87,8 @@ class WifiManager:
         profiles = {}
         for line in lines:
             ssid, password = line.strip().split(';')
-            profiles[ssid] = password
+            profiles['ssid'] = ssid
+            profiles['password'] = password
         return profiles
 
 
