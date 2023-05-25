@@ -212,7 +212,8 @@ class WifiManager:
                 self.__SendResponse("""<p>SSID must be providaded!</p><p>Go back and try again!</p>""", 400)
             elif self.__WifiConnect(ssid, password):
                 self.__SendResponse("""<p>Successfully connected to</p><h1>{0}</h1><p>IP address: {1}</p>""".format(ssid, self.wlan_sta.ifconfig()[0]))
-                profiles = self.__ReadProfiles()
+                profiles = {}
+                #profiles = self.__ReadProfiles()
                 profiles[ssid] = password
                 self.__WriteProfiles(profiles)
                 utime.sleep(5)
