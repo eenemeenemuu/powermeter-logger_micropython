@@ -5,9 +5,11 @@ Software um die aktuellen Messwerte verschiedener Energiemessdosen auszulesen un
 * Wemos D1 Mini (ESP8266)
 * Theoretisch alle weiteren Geräte auf denen Micropython läuft (nicht getestet)
 
-## Unterstützte Energiemessdosen
+## Unterstützte Energiemessgeräte
 * Fritz!DECT 200/210
-* Shelly-Geräte (getestet: Shelly Plug S, Shelly 1 PM)
+* Shelly-Geräte (getestet: Shelly Plug S, Shelly 1 PM, Shelly 3EM)
+* Tasmota-Energiemessgeräte
+* AhoyDTU
 
 ## Installation / Konfiguration
 1. Dieses Repository herunterladen
