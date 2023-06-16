@@ -63,9 +63,32 @@ def powermeter_stats():
             gc.collect()
 
             print('Collecting stats: ', end = '')
-            stats = get_stats()
-            if (stats == False):
-                continue
+            if type(host) is str:
+                stats = get_stats(host)
+                if (stats == False):
+                    continue
+            else:
+                print()
+                power_sum = 0
+                power_array = list()
+                for h in host:
+                    print('- ' + h + ': ', end = '')
+                    stats = get_stats(h)
+                    if (stats == False):
+                        continue
+                    else:
+                        print(stats)
+                        stats_parts = stats.split(',')
+                        stats_date = stats_parts[0]
+                        stats_time = stats_parts[1]
+                        power_sum += float(stats_parts[2])
+                        power_array.append(stats_parts[2])
+                        if (len(stats_parts) > 3):
+                            stats_temp = stats_parts[3]
+                        else:
+                            stats_temp = ''
+                print('--> ', end = '')
+                stats = stats_date + ',' + stats_time + ',' + str(power_sum) + ',' + stats_temp + ',' + ','.join(power_array)
             print(stats)
 
             gc.collect()

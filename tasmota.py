@@ -1,9 +1,8 @@
 import json
-from powermeter_cfg import host
 from powermeter_functions import http_get
 from powermeter_functions import power_threshold_get
 
-def get_stats():
+def get_stats(host):
     stats = http_get('http://'+host+'/cm?cmnd=Status%208')
 
     if (stats == ""):

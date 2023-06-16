@@ -4,7 +4,7 @@ from powermeter_functions import power_threshold_get
 
 sid = ""
 
-def get_stats():
+def get_stats(host):
     global sid
     stats = http_get_stats('http://'+host+'/webservices/homeautoswitch.lua?ain='+ain+'&switchcmd=getbasicdevicestats&sid='+sid)
     if (stats == ""):

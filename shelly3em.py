@@ -1,10 +1,9 @@
 import json
-from powermeter_cfg import host
 from powermeter_functions import http_get
 from powermeter_functions import convert_unix_timestamp
 from powermeter_functions import power_threshold_get
 
-def get_stats():
+def get_stats(host):
     stats = http_get('http://'+host+'/status')
 
     if (stats == ""):

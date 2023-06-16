@@ -1,5 +1,5 @@
 device = ''             # possible options: fritzbox, shelly3em, shelly, tasmota, ahoydtu
-host = ''               # host name or ip address of power meter, e.g. fritz.box or 192.168.178.1
+host = ''               # host name or ip address of power meter, e.g. fritz.box or 192.168.178.1; add tuple to collect data from more than one device
 username = ''           # fritzbox only: user name
 fritz_pw = ''           # fritzbox only: password
 ain = ''                # fritzbox only: Aktor Identifikationsnummer (AIN), on your FRITZ!Box go to "Heimnetz > Smart Home" and edit your device to get the AIN
