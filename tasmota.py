@@ -1,5 +1,6 @@
 import json
 from powermeter_functions import http_get
+from powermeter_functions import cettime
 from powermeter_functions import power_threshold_get
 
 def get_stats(host):
@@ -11,10 +12,10 @@ def get_stats(host):
 
     stats = json.loads(stats[stats.find('{'):])
 
-    t = stats['StatusSNS']['Time']
+    t = cettime()
 
-    stats_date = '{:02d}.{:02d}.{:04d}'.format(int(t[8:10]), int(t[5:7]), int(t[0:4]))
-    stats_time = ',{:02d}:{:02d}:{:02d}'.format(int(t[11:13]), int(t[14:16]), int(t[17:19]))
+    stats_date = '{:02d}.{:02d}.{:04d}'.format(t[2], t[1], t[0])
+    stats_time = ',{:02d}:{:02d}:{:02d}'.format(t[3], t[4], t[5])
     stats_power = ',{:.2f}'.format(power_threshold_get(float(stats['StatusSNS']['ENERGY']['Voltage'])*float(stats['StatusSNS']['ENERGY']['Current'])*float(stats['StatusSNS']['ENERGY']['Factor'])))
 
     return stats_date + stats_time + stats_power
