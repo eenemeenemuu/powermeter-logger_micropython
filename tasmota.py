@@ -10,7 +10,7 @@ def get_stats(host):
         print('Failed')
         return False
 
-    stats = json.loads(stats[stats.find('{'):])
+    stats = json.loads(stats[stats.find('{'):stats.rfind('}')+1])
 
     t = cettime()
 
